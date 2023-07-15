@@ -1,0 +1,65 @@
+Leetcode --> 2008 (if problems contain rides[i] = [starti, endi, tipi] this format and you are needed to calculate maximum tip, or value, then you just have to sort and do following work)
+/*
+Given n and rides, return the maximum number of dollars you can earn by picking up the passengers optimally.
+
+Note: You may drop off a passenger and pick up a different passenger at the same point.
+
+*/
+
+class Solution {
+public:
+    long long dp[(int)1e5];
+   int find(vector<vector<int>>&events,int start,int toFind)
+    {
+        int low=start;
+        int high=events.size()-1;
+        int ans=-1;
+        while(low<=high)
+        {
+            int mid=(low+high)/2;
+            
+            if(events[mid][0]>=toFind)
+            {
+                ans=mid;
+              high=mid-1;
+            }
+            else
+            {
+                low=mid+1;
+            }
+        }
+      
+        return ans;
+        
+    }
+    long long recur(vector<vector<int>>&rides,int nn,int idx)
+    {
+        if(idx>=nn)
+            return 0;
+       if(idx<0)
+           return 0;
+        if(dp[idx]!=-1)
+            return dp[idx];
+        
+        /* O(n) time in worst case */
+        // for(i=idx+1;i<nn;i++)
+        // {
+        //     if(rides[i][0]>=rides[idx][1])
+        //         break;
+        // }
+        
+        /* O(logn) time in worst case Binary Search */
+        int i=find(rides,idx+1,rides[idx][1]);
+        long long op1=recur(rides,nn,idx+1);
+        long long op2=rides[idx][1]-rides[idx][0]+rides[idx][2]+recur(rides,nn,i);
+        
+        return dp[idx]=max(op1,op2);
+    }
+    long long maxTaxiEarnings(int n, vector<vector<int>>& rides) {
+        
+        sort(rides.begin(),rides.end());
+        int nn=rides.size();
+        memset(dp,-1,sizeof dp);
+        return recur(rides,nn,0);
+    }
+};
