@@ -1,0 +1,61 @@
+Given an integer n, return the least number of perfect square numbers that sum to n.
+
+A perfect square is an integer that is the square of an integer; in other words, it is the product of some integer with itself.
+For example, 1, 4, 9, and 16 are perfect squares while 3 and 11 are not.
+
+class Solution {
+public:
+    int solve(int n, vector<int> &dp){
+        if(n == 0) return 0;
+        
+        if(dp[n] != -1){
+            return dp[n];
+        }
+        
+        int ans = n;  //if we select only 1 then n will be the maximum
+        for(int j = 1; j * j <= n; j++){
+            ans = min(ans, 1 + solve(n-(j*j), dp));
+        }
+        
+        return dp[n] = ans;
+    }
+    
+    int solveTab(int n){
+        vector<int> dp(n+1, 0);
+        
+        dp[0] = 0;
+        dp[1] = 1;
+        
+        for(int i = 2; i <= n; i++){
+            int mini = INT_MAX;
+            for(int j = 1; j * j <= i; j++){
+                mini = min(mini, 1 + dp[i - (j*j)]);
+            }
+            
+            dp[i] = mini;
+        }
+        
+        return dp[n];
+    }
+    
+    int numSquares(int n) {
+        vector<int> dp(n+1, -1);
+         // return solve(n, dp);
+        return solveTab(n);
+    }
+};
+
+/*
+To go from 1 to n
+
+let's eg is 5
+for 0, 0 possible ways
+for 1, 1 possble ways
+for 2, 2 - 1^2 = 1   [2]
+for 3, 3 - 1^2 or 3 - 2^2 < 0
+       so [3] 1's will be needed
+for 4, 4 - 1^2 = 3 or 4 - 2^2 = 0
+       at 3 ways = 3, at 0 ways = 0
+       [1] ways
+       
+*/
