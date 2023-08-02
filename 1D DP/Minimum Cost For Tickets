@@ -1,0 +1,65 @@
+You are given an integer array nums and an integer k.
+
+Split the array into some number of non-empty subarrays. The cost of a split is the sum of the importance value of each subarray in the split.
+
+Let trimmed(subarray) be the version of the subarray where all numbers which appear only once are removed.
+
+For example, trimmed([3,1,2,4,3,4]) = [3,4,3,4].
+The importance value of a subarray is k + trimmed(subarray).length.
+
+For example, if a subarray is [1,2,3,3,3,4,4], then trimmed([1,2,3,3,3,4,4]) = [3,3,3,4,4].The importance value of this subarray will be k + 5.
+Return the minimum possible cost of a split of nums.
+
+A subarray is a contiguous non-empty sequence of elements within an array.
+
+
+class Solution {
+    
+    int solve(int n, vector<int> &days, vector<int> &costs, int idx, vector<int> &dp){
+        if(idx >= n) return 0;
+        
+        if(dp[idx] != -1) return dp[idx];
+        
+        int op1 = costs[0] + solve(n, days, costs, idx+1, dp);
+        
+        int i;
+        for(i = idx; i < n && days[i] < days[idx]+7; i++);
+        int op2 = costs[1] + solve(n, days, costs, i, dp);
+        
+        for(i = idx; i < n && days[i] < days[idx] + 30; i++);
+        int op3 = costs[2] + solve(n, days, costs, i, dp);
+        
+        return dp[idx] = min(op1, min(op2, op3));
+    }
+    
+    
+    int solveTab(vector<int> &days, vector<int> &costs){
+        int n = days.size();
+        vector<int> dp(n+1, 0);
+        dp[n] = 0;
+        for(int k = n-1; k >= 0; k--){
+            // 1 day pass
+            int option1 = costs[0] + dp[k+1];
+            
+            int i;
+            // 7 days pass
+            for(i = k; i < n && days[i] < days[k] + 7; i++);
+            int option2 = costs[1] + dp[i];
+            
+            // 30  days pass
+            for(i = k; i < n && days[i] < days[k] + 30; i++);
+            int option3 = costs[2] + dp[i];
+                
+            dp[k] = min(option1, min(option2, option3)); 
+        }
+        return dp[0];
+        
+    }
+public:
+    int mincostTickets(vector<int>& days, vector<int>& costs) {
+        int n = days.size();
+        vector<int> dp(n+1, -1);
+        return solve(n, days, costs, 0, dp);
+        // return solveTab(days, costs);
+    }
+};
