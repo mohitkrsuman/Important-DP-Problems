@@ -1,0 +1,53 @@
+On an n x n chessboard, a knight starts at the cell (row, column) and attempts to make exactly k moves. The rows and columns are 0-indexed, so the top-left cell is (0, 0), and the bottom-right cell is (n - 1, n - 1).
+
+A chess knight has eight possible moves it can make, as illustrated below. Each move is two cells in a cardinal direction, then one cell in an orthogonal direction.
+
+class Solution {
+public:
+    int dx[8] = {-2, -1, 1, 2, 2, 1, -1, -2};
+    int dy[8] = {1, 2, 2, 1, -1, -2, -2, -1};
+    
+    bool isValid(int row, int col, int n){
+        if(row >= 0 && row < n && col >= 0 && col < n){
+            return true;
+        }
+        
+        return false;
+    }
+    
+    double knightProbability(int n, int k, int row, int column) {
+        vector<vector<double>> curr(n, vector<double>(n, 0.0)), next(n, vector<double>(n, 0.0));
+        
+        curr[row][column] = 1.0;
+        
+        for(int move = 1; move <= k; move++){
+            for(int i = 0; i < n; i++){
+                for(int j = 0; j < n; j++){
+                    if(curr[i][j] != 0){
+                        for(int z = 0; z < 8; z++){
+                            int ni = i + dx[z];
+                            int nj = j + dy[z];
+                            
+                            if(isValid(ni, nj, n)){
+                                next[ni][nj] += curr[i][j]/8.0;
+                            }
+                        }
+                    }
+                }
+            }
+            curr = next;
+            vector<vector<double>> newArr(n, vector<double>(n, 0.0));
+            next = newArr;
+        }
+        
+        double sum = 0.0;
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < n; j++){
+                sum += curr[i][j];
+            }
+        }
+        
+        return sum;
+        
+    }
+};
